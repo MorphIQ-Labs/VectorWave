@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Maven Settings Template for VectorWave Deployment
+    
+    Copy this file to ~/.m2/settings.xml and configure with your repository details.
+    
+    Usage:
+    1. For local repository: mvn deploy -Dsnapshots.repository.url=file:///path/to/repo
+    2. For Nexus/Artifactory: Configure servers section below with credentials
+    3. For GitHub Packages: Use GitHub token as password
+-->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                              https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <!-- Server credentials for repository authentication -->
+    <servers>
+        <!-- Nexus/Artifactory example -->
+        <server>
+            <id>snapshots</id>
+            <username>${env.REPO_USERNAME}</username>
+            <password>${env.REPO_PASSWORD}</password>
+        </server>
+        <server>
+            <id>releases</id>
+            <username>${env.REPO_USERNAME}</username>
+            <password>${env.REPO_PASSWORD}</password>
+        </server>
+        
+        <!-- GitHub Packages example -->
+        <server>
+            <id>github</id>
+            <username>${env.GITHUB_ACTOR}</username>
+            <password>${env.GITHUB_TOKEN}</password>
+        </server>
+    </servers>
+
+    <!-- Profile for repository URLs -->
+    <profiles>
+        <!-- Local repository deployment -->
+        <profile>
+            <id>local-deploy</id>
+            <properties>
+                <snapshots.repository.url>file://${user.home}/.m2/repository</snapshots.repository.url>
+                <releases.repository.url>file://${user.home}/.m2/repository</releases.repository.url>
+            </properties>
+        </profile>
+
+        <!-- Nexus repository -->
+        <profile>
+            <id>nexus-deploy</id>
+            <properties>
+                <snapshots.repository.url>https://nexus.example.com/repository/maven-snapshots/</snapshots.repository.url>
+                <releases.repository.url>https://nexus.example.com/repository/maven-releases/</releases.repository.url>
+            </properties>
+        </profile>
+
+        <!-- Artifactory repository -->
+        <profile>
+            <id>artifactory-deploy</id>
+            <properties>
+                <snapshots.repository.url>https://artifactory.example.com/artifactory/libs-snapshot-local</snapshots.repository.url>
+                <releases.repository.url>https://artifactory.example.com/artifactory/libs-release-local</releases.repository.url>
+            </properties>
+        </profile>
+
+        <!-- GitHub Packages -->
+        <profile>
+            <id>github-deploy</id>
+            <properties>
+                <snapshots.repository.url>https://maven.pkg.github.com/morphiq-labs/VectorWave</snapshots.repository.url>
+                <releases.repository.url>https://maven.pkg.github.com/morphiq-labs/VectorWave</releases.repository.url>
+            </properties>
+        </profile>
+    </profiles>
+
+    <!-- Optionally activate a profile by default -->
+    <!-- <activeProfiles>
+        <activeProfile>local-deploy</activeProfile>
+    </activeProfiles> -->
+
+</settings>
