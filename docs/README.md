@@ -120,7 +120,7 @@
 ### Conventions
 - **Code Examples**: All examples tested with Java 21+
 - **Performance Data**: Benchmarked on modern hardware with GraalVM 24.0.2
-- **Version Compatibility**: Documentation matches version 1.0.0-SNAPSHOT
+- **Version Compatibility**: Documentation matches version 1.0.0
 
 ### Document Types
 | Type | Purpose | Audience |
