@@ -82,14 +82,14 @@ mvn exec:java -Dexec.mainClass="com.morphiqlabs.Main"
 <dependency>
     <groupId>com.morphiqlabs</groupId>
     <artifactId>vectorwave-core</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 </dependency>
 
 <!-- For SIMD optimizations (optional) -->
 <dependency>
     <groupId>com.morphiqlabs</groupId>
     <artifactId>vectorwave-extensions</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
