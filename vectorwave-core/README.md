@@ -33,7 +33,7 @@ The `vectorwave-core` module provides the foundational wavelet transform algorit
 <dependency>
     <groupId>com.morphiqlabs</groupId>
     <artifactId>vectorwave-core</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 

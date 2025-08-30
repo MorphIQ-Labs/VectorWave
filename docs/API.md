@@ -310,12 +310,12 @@ try {
     <dependency>
         <groupId>com.morphiqlabs</groupId>
         <artifactId>vectorwave-core</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
     </dependency>
     <dependency>
         <groupId>com.morphiqlabs</groupId>
         <artifactId>vectorwave-extensions</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
         <scope>runtime</scope>
     </dependency>
 </dependencies>
