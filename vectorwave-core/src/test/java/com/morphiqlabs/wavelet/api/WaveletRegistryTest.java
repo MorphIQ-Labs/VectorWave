@@ -241,8 +241,8 @@ class WaveletRegistryTest {
         assertEquals(WaveletType.CONTINUOUS, WaveletName.MORLET.getType());
         assertEquals(WaveletType.COMPLEX, WaveletName.CMOR.getType());
         
-        // Test toString returns the code
-        assertEquals("db4", WaveletName.DB4.toString());
-        assertEquals("haar", WaveletName.HAAR.toString());
+        // Test toString returns the description (display name)
+        assertEquals("Daubechies 4", WaveletName.DB4.toString());
+        assertEquals("Haar wavelet", WaveletName.HAAR.toString());
     }
 }
