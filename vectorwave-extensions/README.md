@@ -32,12 +32,12 @@ The `vectorwave-extensions` module provides SIMD acceleration and advanced concu
 <dependency>
     <groupId>com.morphiqlabs</groupId>
     <artifactId>vectorwave-core</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>com.morphiqlabs</groupId>
     <artifactId>vectorwave-extensions</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <scope>runtime</scope>
 </dependency>
 ```
@@ -127,19 +127,19 @@ No code changes required! Simply add the extensions module as a dependency:
 <dependency>
     <groupId>com.morphiqlabs</groupId>
     <artifactId>vectorwave-core</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
 </dependency>
 
 <!-- After: Core + Extensions -->
 <dependency>
     <groupId>com.morphiqlabs</groupId>
     <artifactId>vectorwave-core</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>com.morphiqlabs</groupId>
     <artifactId>vectorwave-extensions</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <scope>runtime</scope>
 </dependency>
 ```

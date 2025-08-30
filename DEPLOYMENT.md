@@ -176,7 +176,7 @@ To deploy a release version (non-SNAPSHOT):
 
 3. Update to next SNAPSHOT:
    ```bash
-   mvn versions:set -DnewVersion=1.0.1
+   mvn versions:set -DnewVersion=1.0.2-SNAPSHOT
    mvn versions:commit
    ```
 

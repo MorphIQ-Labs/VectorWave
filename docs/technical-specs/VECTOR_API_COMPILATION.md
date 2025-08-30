@@ -91,7 +91,7 @@ java --list-modules | grep jdk.incubator.vector
 
 If the module is present, you'll see:
 ```
-jdk.incubator.vector@21.0.1
+jdk.incubator.vector@21.0.2-SNAPSHOT
 ```
 
 ## Performance Impact
