@@ -173,8 +173,17 @@ public enum WaveletName {
     }
     
     
+    /**
+     * Get the display name suitable for UI presentation.
+     * This is an alias for getDescription() to improve clarity.
+     * @return the display name (e.g., "Symlet 11")
+     */
+    public String getDisplayName() {
+        return description;
+    }
+
     @Override
     public String toString() {
-        return code;
+        return description;
     }
 }
