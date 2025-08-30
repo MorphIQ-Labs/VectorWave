@@ -138,7 +138,7 @@ mvn clean package -pl vectorwave-examples
 
 # Run JAR
 java --add-modules jdk.incubator.vector --enable-preview \
-  -jar target/vectorwave-examples-1.0.0-jar-with-dependencies.jar
+  -jar target/vectorwave-examples-1.0.1-SNAPSHOT-jar-with-dependencies.jar
 ```
 
 ## Performance Tips
