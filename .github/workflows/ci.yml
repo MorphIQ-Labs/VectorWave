@@ -1,0 +1,502 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-core:
+    name: Build Core Module (Java 21)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Oracle JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '21'
+
+      - name: Cache Maven dependencies (repository only)
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Write toolchains.xml (JDK 21)
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/toolchains.xml << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>21</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JAVA_HOME_21_X64}</jdkHome>
+              </configuration>
+            </toolchain>
+          </toolchains>
+          EOF
+
+      - name: Build and install parent POM and core+deps (includes FFT)
+        run: |
+          mvn -q -N -DskipTests install
+          mvn -q -pl vectorwave-core -am -DskipTests install
+
+      - name: Test core module
+        env:
+          VECTORWAVE_SYM_BASELINE: strict
+        run: mvn test -pl vectorwave-core
+
+      - name: Upload JaCoCo coverage (core)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-core-report
+          path: |
+            vectorwave-core/target/site/jacoco
+            vectorwave-core/target/jacoco.exec
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-core-ubuntu-latest-java21
+          path: vectorwave-core/target/surefire-reports/
+
+  build-extensions:
+    name: Build Extensions Module (Java 24)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Oracle JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '21'
+
+      - name: Record JDK21_HOME
+        run: echo "JDK21_HOME=${JAVA_HOME_21_X64}" >> $GITHUB_ENV
+
+      - name: Set up Oracle JDK 24
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '24'
+
+      - name: Cache Maven dependencies (repository only)
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Write toolchains.xml (JDK 21 + 24)
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/toolchains.xml << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>21</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JDK21_HOME}</jdkHome>
+              </configuration>
+            </toolchain>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>24</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JAVA_HOME_24_X64}</jdkHome>
+              </configuration>
+            </toolchain>
+          </toolchains>
+          EOF
+
+      - name: Build and install parent POM and core+deps first (includes FFT)
+        run: |
+          mvn -q -N -DskipTests install
+          mvn -q -pl vectorwave-core -am -DskipTests install
+
+      - name: Build extensions module
+        run: mvn clean compile -pl vectorwave-extensions -am
+
+      - name: Test extensions module
+        run: mvn test -pl vectorwave-extensions
+
+      - name: Upload JaCoCo coverage (extensions)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-extensions-report
+          path: |
+            vectorwave-extensions/target/site/jacoco
+            vectorwave-extensions/target/jacoco.exec
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-extensions-ubuntu-latest-java24
+          path: vectorwave-extensions/target/surefire-reports/
+
+  build-examples:
+    name: Build Examples Module (Java 24)
+    runs-on: ubuntu-latest
+    needs: [build-core, build-extensions]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Oracle JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '21'
+
+      - name: Record JDK21_HOME
+        run: echo "JDK21_HOME=${JAVA_HOME_21_X64}" >> $GITHUB_ENV
+
+      - name: Set up Oracle JDK 24
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '24'
+
+      - name: Cache Maven dependencies (repository only)
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Write toolchains.xml (JDK 21 + 24)
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/toolchains.xml << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>21</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JDK21_HOME}</jdkHome>
+              </configuration>
+            </toolchain>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>24</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JAVA_HOME_24_X64}</jdkHome>
+              </configuration>
+            </toolchain>
+          </toolchains>
+          EOF
+
+      - name: Build and install all dependencies
+        run: mvn clean install -DskipTests
+
+      - name: Test examples module
+        run: mvn test -pl vectorwave-examples
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-examples-java24
+          path: vectorwave-examples/target/surefire-reports/
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [build-core, build-extensions]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Oracle JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '21'
+
+      - name: Record JDK21_HOME
+        run: echo "JDK21_HOME=${JAVA_HOME_21_X64}" >> $GITHUB_ENV
+
+      - name: Set up Oracle JDK 24
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '24'
+
+      - name: Cache Maven dependencies (repository only)
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Write toolchains.xml (JDK 21 + 24)
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/toolchains.xml << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>21</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JDK21_HOME}</jdkHome>
+              </configuration>
+            </toolchain>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>24</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JAVA_HOME_24_X64}</jdkHome>
+              </configuration>
+            </toolchain>
+          </toolchains>
+          EOF
+
+      - name: Build and install all modules
+        run: mvn clean install -DskipTests
+
+      - name: Run integration tests
+        run: mvn verify
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Oracle JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '21'
+
+      - name: Record JDK21_HOME
+        run: echo "JDK21_HOME=${JAVA_HOME_21_X64}" >> $GITHUB_ENV
+
+      - name: Set up Oracle JDK 24
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '24'
+
+      - name: Cache Maven dependencies (repository only)
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Write toolchains.xml (JDK 21 + 24)
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/toolchains.xml << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>21</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JDK21_HOME}</jdkHome>
+              </configuration>
+            </toolchain>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>24</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JAVA_HOME_24_X64}</jdkHome>
+              </configuration>
+            </toolchain>
+          </toolchains>
+          EOF
+
+      - name: Check compilation warnings
+        run: |
+          mvn clean compile -Dmaven.compiler.showWarnings=true 2>&1 | tee compile.log
+          # Filter out expected warnings for preview features and Vector API
+          if grep -E "^\[WARNING\]|^Warning:" compile.log \
+            | grep -v "using incubating module" \
+            | grep -v "preview API" \
+            | grep -v "sun.misc.Unsafe" \
+            | grep -v "StructuredTaskScope" \
+            | grep -v "serialVersionUID" \
+            > /dev/null; then
+            echo "Found unexpected compilation warnings"
+            exit 1
+          else
+            echo "No unexpected compilation warnings found"
+          fi
+
+      - name: Verify dependency structure
+        run: mvn dependency:tree
+
+  javadoc-checks:
+    name: Javadoc (doclint all)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Oracle JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '21'
+
+      - name: Cache Maven dependencies (repository only)
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Write toolchains.xml (JDK 21)
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/toolchains.xml << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>21</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JAVA_HOME_21_X64}</jdkHome>
+              </configuration>
+            </toolchain>
+          </toolchains>
+          EOF
+
+      - name: Build parent + core (with FFT dependency)
+        run: |
+          mvn -q -DskipTests -N install
+          mvn -q -DskipTests -pl vectorwave-core -am install
+
+      # Skip per-module core Javadocs here; rely on aggregate below under JDK 24
+
+      - name: Set up Oracle JDK 24 (for extensions)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '24'
+
+      - name: Write toolchains.xml (JDK 21 + 24)
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/toolchains.xml << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>21</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JAVA_HOME_21_X64}</jdkHome>
+              </configuration>
+            </toolchain>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>24</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JAVA_HOME_24_X64}</jdkHome>
+              </configuration>
+            </toolchain>
+          </toolchains>
+          EOF
+
+      # Skip per-module extensions Javadocs due to plugin aggregation bug; rely on aggregate below
+
+      - name: Full aggregate Javadocs (JDK 24 with preview)
+        run: |
+          # Build core + extensions to ensure module descriptors are compiled
+          mvn -q -DskipTests -Dmaven.test.skip=true -Pdocs-all -pl vectorwave-core,vectorwave-extensions -am package
+          # Aggregate across core + extensions only
+          mvn -q -DskipTests -Dmaven.javadoc.skip=false -Pdocs-all -pl vectorwave-core,vectorwave-extensions -am javadoc:aggregate
+
+      - name: Upload Javadocs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: javadocs-site
+          path: |
+            target/site/apidocs
+
+  swt-lifecycle-tests:
+    name: SWT Lifecycle Tests (fast)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Oracle JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '21'
+
+      - name: Cache Maven dependencies (repository only)
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Write toolchains.xml (JDK 21)
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/toolchains.xml << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>21</version>
+              </provides>
+              <configuration>
+                <jdkHome>${JAVA_HOME_21_X64}</jdkHome>
+              </configuration>
+            </toolchain>
+          </toolchains>
+          EOF
+
+      - name: Run SWT lifecycle tests only
+        run: >
+          mvn -q -pl vectorwave-core -am -Dtest=com.morphiqlabs.wavelet.swt.VectorWaveSwtAdapterLifecycleTest
+          -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false test
+
+      - name: Upload test results (SWT lifecycle)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-swt-lifecycle
+          path: vectorwave-core/target/surefire-reports/

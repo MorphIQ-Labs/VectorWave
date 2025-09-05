@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.morphiqlabs</groupId>
+    <artifactId>vectorwave-parent</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    
+    <name>VectorWave Parent</name>
+    <description>Parent POM for VectorWave modular wavelet transform library</description>
+    <url>https://github.com/MorphIQ-Labs/VectorWave</url>
+
+    <modules>
+        <module>vectorwave-fft</module>
+        <module>vectorwave-core</module>
+        <module>vectorwave-extensions</module>
+        <module>vectorwave-examples</module>
+        <module>vectorwave-benchmarks</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <junit.version>5.13.4</junit.version>
+        <jmh.version>1.37</jmh.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <jacoco.version>0.8.13</jacoco.version>
+        <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
+        <maven.surefire.plugin.version>3.5.3</maven.surefire.plugin.version>
+        <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
+        <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
+        <!-- Skip Javadoc by default; enable in JDK24 docs jobs -->
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Internal module dependencies -->
+            <dependency>
+                <groupId>com.morphiqlabs</groupId>
+                <artifactId>vectorwave-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.morphiqlabs</groupId>
+                <artifactId>vectorwave-fft</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.morphiqlabs</groupId>
+                <artifactId>vectorwave-extensions</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.morphiqlabs</groupId>
+                <artifactId>vectorwave-examples</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            
+            <!-- Testing dependencies -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            
+            <!-- JMH for benchmarking -->
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-core</artifactId>
+                <version>${jmh.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>${jmh.version}</version>
+                <scope>test</scope>
+            </dependency>
+            
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.plugin.version}</version>
+                    <configuration>
+                        <forkCount>1</forkCount>
+                        <reuseForks>true</reuseForks>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven.jar.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+        <!-- Aggregate core docs on JDK 21 without preview/incubator -->
+        <profile>
+            <id>docs-core</id>
+            <activation>
+                <jdk>[21,22)</jdk>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven.javadoc.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>aggregate-core</id>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                                <configuration>
+                                    <jdkToolchain>
+                                        <version>[24,)</version>
+                                    </jdkToolchain>
+                                    <failOnError>true</failOnError>
+                                    <doclint>all</doclint>
+                                    <quiet>true</quiet>
+                                    <source>21</source>
+                                    <excludePackageNames>
+                                        com.morphiqlabs.wavelet.internal.*,com.morphiqlabs.demo.*,com.morphiqlabs.benchmark.*,com.morphiqlabs.examples.*,com.morphiqlabs.wavelet.extensions.*
+                                    </excludePackageNames>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Full aggregate docs on JDK 24 with preview/incubator -->
+        <profile>
+            <id>docs-all</id>
+            <activation>
+                <jdk>[24,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven.javadoc.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>aggregate-all</id>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                                <configuration>
+                                    <jdkToolchain>
+                                        <version>[24,)</version>
+                                    </jdkToolchain>
+                                    <failOnError>true</failOnError>
+                                    <doclint>all</doclint>
+                                    <quiet>true</quiet>
+                                    <additionalOptions>
+                                        --enable-preview
+                                        --add-modules=jdk.incubator.vector
+                                        -Xdoclint:all
+                                    </additionalOptions>
+                                    <source>24</source>
+                                    <excludePackageNames>
+                                        com.morphiqlabs.wavelet.internal.*,com.morphiqlabs.demo.*,com.morphiqlabs.benchmark.*,com.morphiqlabs.examples.*
+                                    </excludePackageNames>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <!-- Distribution Management for deployment to GitHub Packages -->
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub MorphIQ-Labs Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/MorphIQ-Labs/VectorWave</url>
+        </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>GitHub MorphIQ-Labs Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/MorphIQ-Labs/VectorWave</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License v3.0</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0-standalone.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+</project>

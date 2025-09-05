@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="VectorWave Javadocs: Core wavelet APIs (Java 21) and SIMD extensions (Java 24 Vector API)." />
+  <title>VectorWave Javadocs</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; color: #222; }
+    h1 { font-size: 1.8rem; margin-bottom: .25rem; }
+    p { color: #555; }
+    ul { list-style: none; padding: 0; margin: 1rem 0; }
+    li { margin: .5rem 0; }
+    a.card { display: block; padding: 1rem 1.25rem; border: 1px solid #ddd; border-radius: 8px; text-decoration: none; color: inherit; }
+    a.card:hover { border-color: #999; background: #fafafa; }
+    small { color: #777; }
+  </style>
+  <meta name="robots" content="noindex" />
+  <!-- This landing page links to module-specific apidocs. -->
+</head>
+<body>
+  <h1>VectorWave Javadocs</h1>
+  <p>Select a module to view its API reference.</p>
+  <p><strong>SIMD Integration:</strong> Vector API–based acceleration lives in the
+     optional <code>vectorwave-extensions</code> module (Java 24 + incubator). The core module is
+     a portable scalar Java 21 implementation. Add <code>vectorwave-extensions</code> for
+     high‑throughput SIMD paths.</p>
+  <ul>
+    <li>
+      <a class="card" href="core/index.html">
+        <strong>Core</strong><br/>
+        <small>Wavelet APIs (MODWT/SWT/CWT), utilities, and base types</small>
+      </a>
+    </li>
+    <li>
+      <a class="card" href="extensions/index.html">
+        <strong>Extensions</strong><br/>
+        <small>Parallel utilities, Vector API optimizations, and structured concurrency</small>
+      </a>
+    </li>
+    <li>
+      <a class="card" href="coverage/core/index.html">
+        <strong>Core Coverage</strong><br/>
+        <small>JaCoCo report generated from CI test run</small>
+      </a>
+    </li>
+  </ul>
+  <p><small>Built from main via GitHub Actions.</small></p>
+</body>
+</html>

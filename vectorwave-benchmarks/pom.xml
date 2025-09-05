@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.morphiqlabs</groupId>
+        <artifactId>vectorwave-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>vectorwave-benchmarks</artifactId>
+    <name>VectorWave Benchmarks</name>
+    <description>JMH benchmarks for VectorWave (non-modular, classpath-based)</description>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.release>24</maven.compiler.release>
+    </properties>
+
+    <dependencies>
+        <!-- Modules under test -->
+        <dependency>
+            <groupId>com.morphiqlabs</groupId>
+            <artifactId>vectorwave-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.morphiqlabs</groupId>
+            <artifactId>vectorwave-extensions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.morphiqlabs</groupId>
+            <artifactId>vectorwave-fft</artifactId>
+        </dependency>
+
+        <!-- JMH on classpath -->
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Logging (optional) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>[24,25)</version>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>24</release>
+                    <useModulePath>false</useModulePath>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                    <skipTests>true</skipTests>
+                    <argLine></argLine>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <mainClass>org.openjdk.jmh.Main</mainClass>
+                    <classpathScope>compile</classpathScope>
+                    <includePluginDependencies>false</includePluginDependencies>
+                    <arguments>
+                        <!-- Pass additional JMH args via -Dexec.args=... -->
+                    </arguments>
+                    <systemProperties>
+                        <systemProperty>
+                            <key>jmh.separateClasspathJAR</key>
+                            <value>false</value>
+                        </systemProperty>
+                    </systemProperties>
+                    <cleanupDaemonThreads>false</cleanupDaemonThreads>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

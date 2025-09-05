@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.morphiqlabs</groupId>
+        <artifactId>vectorwave-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>vectorwave-examples</artifactId>
+    <packaging>jar</packaging>
+    
+    <name>VectorWave Examples</name>
+    <description>Examples and demonstrations for VectorWave</description>
+
+    <properties>
+        <maven.compiler.release>24</maven.compiler.release>
+    </properties>
+
+    <dependencies>
+        <!-- Core module dependency -->
+        <dependency>
+            <groupId>com.morphiqlabs</groupId>
+            <artifactId>vectorwave-core</artifactId>
+        </dependency>
+        
+        <!-- Extensions module dependency (examples may use SIMD features at runtime) -->
+        <dependency>
+            <groupId>com.morphiqlabs</groupId>
+            <artifactId>vectorwave-extensions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Testing dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>com.morphiqlabs.examples</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>[24,25)</version>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>24</release>
+                    <compilerArgs>
+                        <arg>--add-modules=jdk.incubator.vector</arg>
+                        <arg>--enable-preview</arg>
+                        <arg>-Xlint:all</arg>
+                    </compilerArgs>
+                    <excludes>
+                        <exclude>com/morphiqlabs/demo/**</exclude>
+                        <!-- Exclude examples that depend on non-exported core internals -->
+                        <exclude>com/morphiqlabs/examples/basic/GettingStarted.java</exclude>
+                        <exclude>com/morphiqlabs/examples/basic/WaveletRegistryBasics.java</exclude>
+                        <exclude>com/morphiqlabs/examples/cwt/finance/**</exclude>
+                        <exclude>com/morphiqlabs/examples/finance/**</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                    <argLine>
+                        --add-modules=jdk.incubator.vector
+                        --enable-preview
+                        -XX:+UnlockExperimentalVMOptions
+                        -XX:+EnableVectorSupport
+                    </argLine>
+                </configuration>
+            </plugin>
+            <!-- Exec plugin for running examples -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <!-- Do not pass JVM args as program args by default -->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

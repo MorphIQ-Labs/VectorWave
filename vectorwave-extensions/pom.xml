@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.morphiqlabs</groupId>
+        <artifactId>vectorwave-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>vectorwave-extensions</artifactId>
+    <packaging>jar</packaging>
+    
+    <name>VectorWave Extensions</name>
+    <description>Performance optimizations using Java 24 Vector API and preview features</description>
+
+    <properties>
+        <maven.compiler.release>24</maven.compiler.release>
+    </properties>
+
+    <dependencies>
+        <!-- Core module dependency -->
+        <dependency>
+            <groupId>com.morphiqlabs</groupId>
+            <artifactId>vectorwave-core</artifactId>
+        </dependency>
+        
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        
+        <!-- Testing dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>com.morphiqlabs.wavelet.extensions</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>[24,25)</version>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>24</release>
+                    <compilerArgs>
+                        <arg>--add-modules=jdk.incubator.vector</arg>
+                        <arg>--enable-preview</arg>
+                        <arg>-Xlint:all</arg>
+                    </compilerArgs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <useModulePath>false</useModulePath>
+                            <compilerArgs>
+                                <arg>--add-modules=jdk.incubator.vector</arg>
+                                <arg>--enable-preview</arg>
+                                <arg>-Xlint:-exports</arg>
+                                <arg>-Xlint:-try</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                    <argLine>
+                        --add-modules=jdk.incubator.vector
+                        --enable-preview
+                        -XX:+UnlockExperimentalVMOptions
+                        -XX:+EnableVectorSupport
+                        -XX:+EnableVectorAggressiveReboxing
+                        -XX:+EnableVectorReboxing
+                    </argLine>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>${project.build.outputDirectory}</additionalClasspathElement>
+                    </additionalClasspathElements>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <configuration>
+                    <skip>false</skip>
+                    <failOnError>true</failOnError>
+                    <doclint>all</doclint>
+                    <quiet>true</quiet>
+                    <additionalOptions>
+                        --enable-preview
+                        --add-modules=jdk.incubator.vector
+                        -Xdoclint:all
+                    </additionalOptions>
+                    <source>24</source>
+                    <excludePackageNames>com.morphiqlabs.wavelet.extensions.internal.*,com.morphiqlabs.wavelet.extensions.cwt.optimization.internal.*</excludePackageNames>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.13</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
