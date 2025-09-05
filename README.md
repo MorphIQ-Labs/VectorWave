@@ -3,7 +3,7 @@
 [![Java 21+](https://img.shields.io/badge/Java-21%2B-blue.svg)](https://openjdk.org/projects/jdk/21/)
 [![Maven](https://img.shields.io/badge/Maven-3.6%2B-green.svg)](https://maven.apache.org/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-yellow.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![CI](https://github.com/MorphIQ-Labs/VectorWave/actions/workflows/ci.yml/badge.svg)](https://github.com/MorphIQ-Labs/VectorWave/actions/workflows/ci-multimodule.yml)
+[![CI](https://github.com/MorphIQ-Labs/VectorWave/actions/workflows/ci.yml/badge.svg)](https://github.com/MorphIQ-Labs/VectorWave/actions/workflows/ci.yml)
 [![Javadocs](https://img.shields.io/badge/docs-javadocs-blue)](https://morphiq-labs.github.io/VectorWave/)
 [![SIMD via Extensions](https://img.shields.io/badge/SIMD-Extensions-orange.svg)](docs/SIMD_INTEGRATION.md)
 [![Core Coverage](https://img.shields.io/badge/coverage-core%20JaCoCo-brightgreen)](https://morphiq-labs.github.io/VectorWave/coverage/core/index.html)
