@@ -1,6 +1,4 @@
-|  |
-|:--:|
-| <img src="vectorwave_logo.png" alt="VectorWave Logo" width="240" /> |
+# VectorWave
 
 [![Java 21+](https://img.shields.io/badge/Java-21%2B-blue.svg)](https://openjdk.org/projects/jdk/21/)
 [![Maven](https://img.shields.io/badge/Maven-3.6%2B-green.svg)](https://maven.apache.org/)
